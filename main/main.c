@@ -111,7 +111,7 @@ typedef struct {
     volatile bool wav_playing;
 } irq_shared_t;
 
-// Pode ficar global porque é compartilhado com IRQ
+// Global apenas para comunicação com IRQ
 static irq_shared_t g_irq = {0};
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -140,15 +140,6 @@ static int led_pin_from_idx(int idx) {
         case 1: return LED1_PIN;
         case 2: return LED2_PIN;
         default: return LED3_PIN;
-    }
-}
-
-static int btn_pin_from_idx(int idx) {
-    switch (idx) {
-        case 0: return BTN0_PIN;
-        case 1: return BTN1_PIN;
-        case 2: return BTN2_PIN;
-        default: return BTN3_PIN;
     }
 }
 
@@ -391,7 +382,7 @@ void btn_callback(uint gpio, uint32_t events) {
 
 static int64_t timeout_cb(alarm_id_t id, void *data) {
     (void)id;
-    volatile bool *flag = (volatile bool *)data;
+    bool *flag = (bool *)data;
     *flag = true;
     return 0;
 }
@@ -562,6 +553,7 @@ static void display_wait_touch(void) {
     while (readPoint(&px, &py)) {
         sleep_ms(50);
     }
+
     while (!readPoint(&px, &py)) {
         sleep_ms(30);
     }
@@ -633,6 +625,7 @@ static void show_error(void) {
         leds_all_off();
         sleep_ms(100);
     }
+
     sleep_ms(400);
 }
 
@@ -641,7 +634,7 @@ static int check_step(uint8_t expected_mask, int timeout_ms) {
     int need = popcount8(expected_mask);
     uint8_t got_mask = 0;
     uint8_t prev_mask = 0;
-    volatile bool step_timed_out = false;
+    bool step_timed_out = false;
 
     input_clear();
 
