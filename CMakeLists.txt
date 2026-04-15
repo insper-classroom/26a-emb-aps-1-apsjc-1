@@ -37,11 +37,7 @@ pico_sdk_init()
 
 
 add_executable(ili9341
-    main.c
-    genius_audio.c
-    genius_input.c
-    genius_display.c
-    genius_flash.c
+    main/main.c
 
     # ILI9341 driver
     tft_lcd_ili9341/ili9341/ili9341.c
